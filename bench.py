@@ -1,14 +1,15 @@
 import timeit
+from pathlib import Path
 
 from algo import Algo
-from datasets_utils import get_datasets_path
+from utils import get_datasets_path
 
+RUN_NUMBER = 20
 
-def run_bench(algo: Algo):
-    algo_name = type(algo).__name__
-
+def run(algo: Algo):
     datasets = get_datasets_path()
     for dataset in datasets:
-        execution_time = timeit.timeit(lambda: algo.run(dataset), number=20)
-        print(f'{algo_name}: {execution_time}\n')
+        dataset_name = Path(dataset).stem
+        mean_execution_time = timeit.timeit(lambda: algo.run(dataset), number=RUN_NUMBER) / RUN_NUMBER
 
+        print(f'{dataset_name}: {1000 * mean_execution_time:.3f} \n')

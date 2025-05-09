@@ -18,18 +18,22 @@ RUN wget -q https://dlcdn.apache.org/hadoop/common/hadoop-3.4.1/hadoop-3.4.1.tar
     && rm /tmp/hadoop.tar.gz \
     && mv /opt/hadoop-3.4.1 /opt/hadoop
 
-ENV JAVA_HOME=/usr/lib/jvm/java-18-openjdk-amd64
+#ENV JAVA_HOME=/usr/lib/jvm/java-18-openjdk-amd64
+ENV JAVA_HOME=/usr/lib/jvm/java-18-openjdk-arm64
 ENV HADOOP_HOME=/opt/hadoop
 ENV PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
 
-#WORKDIR .
-#COPY requirements.txt /app/requirements.txt
+WORKDIR /datasets
 COPY datasets .
 
 WORKDIR /app/src
-#
-COPY PageRank/Spark/requirements.txt .
-COPY PageRank/Spark/"Dataframe.py" .
+
+COPY pageRank/Spark/requirements.txt .
+COPY pageRank/Spark/SparkPG.py .
+COPY pageRank/Spark/bench_runner.py .
+COPY algo.py .
+COPY bench.py .
+COPY utils.py .
 
 RUN pip install --no-cache-dir -r requirements.txt
 

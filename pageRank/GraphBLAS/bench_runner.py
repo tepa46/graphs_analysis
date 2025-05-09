@@ -1,4 +1,4 @@
-from GBRPAlgo import GBPRAlgo
+from GBPRAlgo import GBPRAlgo
 from bench import run_bench
 
 if __name__ == "__main__":

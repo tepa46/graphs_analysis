@@ -6,7 +6,8 @@ from utils import get_datasets_path
 
 RUN_NUMBER = 20
 
-def run(algo: Algo):
+
+def run_bench(algo: Algo):
     datasets = get_datasets_path()
     for dataset in datasets:
         dataset_name = Path(dataset).stem

@@ -2,15 +2,11 @@ from os import path, listdir
 import os
 from collections import defaultdict
 import matplotlib.pyplot as plt
+import numpy as np
+from datetime import datetime
 
-RESULT_DIR_PATH = "../output"
-
-
-# ["Algo"]["Realization"]["dataset"]
-
-
-def read_benchmark(datasetPath):
-    return {k: float(v) for line in open(datasetPath) for k, v in [line.strip().split(': ')]}
+BENCHMARKS_DIR_PATH = "../benchmarks"
+PLOT_DIRNAME = "../output/graphs"
 
 
 class Visualizer:
@@ -18,42 +14,138 @@ class Visualizer:
         results = defaultdict(dict)
         for algo in get_algo_name():
             for realization, full_path in get_realization_name(algo):
+                print(full_path)
                 results[algo][realization] = read_benchmark(full_path)
+
+        self.save_dir = PLOT_DIRNAME
+        os.makedirs(self.save_dir, exist_ok=True)
 
         self.bench = results
 
+    def _save_plot(self, name):
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f")[:-3]
+        filename = f"plot_{name}_{timestamp}.png"
+        plt.savefig(path.join(self.save_dir, filename), dpi=300)
+
     def single_algo_plot(self, algoName, realizationName):
         if algoName not in self.bench:
+            print(f"Algo {algoName} not found")
             return
 
         if realizationName not in self.bench[algoName]:
+            print(f"Realization {realizationName} not found")
             return
 
-        print("OK")
+        x = self.bench[algoName][realizationName].keys()
+        y = self.bench[algoName][realizationName].values()
+        err = [i * 0.25 for i in y]
+
+        title = f"{algoName} with {realizationName}"
+
+        x_label = f"Dataset"
+        y_label = f"Time (ms)"
+
+        plt.grid(axis='y', linestyle='--', alpha=0.5, zorder=1)
+        plt.bar(x, y, zorder=2, edgecolor='black', width=0.5, yerr=err,
+                capsize=3)
+        plt.yscale('log')
+        plt.title(title)
+        plt.xlabel(x_label)
+
+        plt.text(
+            0.05, 1.02,
+            y_label,
+            transform=plt.gca().transAxes,
+            rotation=0,
+            ha="right",
+            va="bottom"
+        )
+
+        self._save_plot(f"{algoName}_{realizationName}")
+        clean_plot()
 
     def all_algo_realizations_compare_plot(self, algoName):
         if algoName not in self.bench:
+            print(f"Algo {algoName} not found")
             return
 
         if len(self.bench[algoName]) == 0:
+            print(f"No realizations for algo {algoName}")
             return
 
-        print("OK")
+        data, datasets_name = defaultdict(), set()
+        realizationNames = list(self.bench[algoName].keys())
+
+        for r in realizationNames:
+            for k, v in self.bench[algoName][r].items():
+                datasets_name.add(k)
+                data.setdefault(r, []).append(v)
+
+        x = np.arange(len(datasets_name))
+        width = 0.25
+        multiplier = 0
+
+        fig, ax = plt.subplots(layout='constrained', figsize=(10, 6))
+
+        for spine in ax.spines.values():
+            spine.set_visible(False)
+
+        for attribute, measurement in data.items():
+            offset = width * multiplier
+            ax.bar(x + offset, measurement, width, label=attribute,
+                   zorder=2, edgecolor='black', capsize=3)
+            multiplier += 1
+
+        y_label = f"Time (ms)"
+        ax.text(
+            0.05, 1.02,
+            y_label,
+            transform=plt.gca().transAxes,
+            rotation=0,
+            ha="right",
+            va="bottom"
+        )
+
+        ax.set_xticks(x + width, datasets_name)
+        ax.grid(axis='y', linestyle='--', alpha=0.5, zorder=1)
+        ax.set_yscale('log')
+        ax.legend(
+            loc='upper center',
+            bbox_to_anchor=(0.5, 1.1),
+            ncol=len(datasets_name),
+            frameon=False,
+        )
+        plt.tight_layout(pad=3.0)
+        self._save_plot(f"{algoName}_compareAll")
+        clean_plot(fig)
+
+
+def clean_plot(fig=None):
+    plt.cla()
+    plt.clf()
+    plt.close()
+    if fig is not None:
+        plt.close(fig)
+
+
+def read_benchmark(datasetPath):
+    return {k: float(v) for line in open(datasetPath) for k, v in [line.strip().split(': ')]}
+
 
 def get_algo_name():
-    return [i for i in listdir(RESULT_DIR_PATH) if path.isdir(path.join(RESULT_DIR_PATH, i))]
+    return [i for i in listdir(BENCHMARKS_DIR_PATH) if path.isdir(path.join(BENCHMARKS_DIR_PATH, i))]
 
 
 def get_realization_name(algoName):
-    r = path.join(RESULT_DIR_PATH, algoName)
+    r = path.join(BENCHMARKS_DIR_PATH, algoName)
     return [(path.splitext(i)[0], path.join(r, i)) for i in listdir(r)]
 
 
 def main():
     v = Visualizer()
-    print(v.bench)
     v.single_algo_plot("Pagerank", "spark")
-    # print(get_realization_name("Pagerank"))
+    v.single_algo_plot("Pagerank", "graphBlas")
+    v.all_algo_realizations_compare_plot("Pagerank")
 
 
 if __name__ == '__main__':

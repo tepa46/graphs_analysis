@@ -1,7 +1,7 @@
 VENV_DIR      ?= .venv
 PYTHON        ?= python3
 PIP           ?= $(PYTHON) -m pip
-ENTRY_POINT   ?= main.py
+ENTRY_POINT   ?= Dataframe.py
 
 .PHONY: venv
 

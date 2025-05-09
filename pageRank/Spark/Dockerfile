@@ -1,0 +1,36 @@
+FROM ubuntu:22.04
+
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    git \
+    python3 \
+    python3-pip \
+    python3-venv \
+    wget \
+    openjdk-18-jdk \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /opt
+
+WORKDIR /opt
+RUN wget -q https://dlcdn.apache.org/hadoop/common/hadoop-3.4.1/hadoop-3.4.1.tar.gz -O /tmp/hadoop.tar.gz \
+    && tar -xzf /tmp/hadoop.tar.gz -C /opt/ \
+    && rm /tmp/hadoop.tar.gz \
+    && mv /opt/hadoop-3.4.1 /opt/hadoop
+
+ENV JAVA_HOME=/usr/lib/jvm/java-18-openjdk-amd64
+ENV HADOOP_HOME=/opt/hadoop
+ENV PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+
+#WORKDIR .
+#COPY requirements.txt /app/requirements.txt
+COPY datasets .
+
+WORKDIR /app/src
+#
+COPY PageRank/Spark/requirements.txt .
+COPY PageRank/Spark/"Dataframe.py" .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+#CMD ["python3", "ЧТО-ТО.py"]

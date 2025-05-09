@@ -1,6 +1,11 @@
 # Created by https://www.toptal.com/developers/gitignore/api/pycharm+all,macos,c++
 # Edit at https://www.toptal.com/developers/gitignore?templates=pycharm+all,macos,c++
 
+
+output/
+pageRank/Spark/.venv
+pageRank/GraphBLAS/.venv
+
 ### C++ ###
 # Prerequisites
 *.d

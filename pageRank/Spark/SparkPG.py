@@ -5,6 +5,17 @@ from pyspark.sql.functions import col, lit, coalesce, abs as sql_abs, max as sql
 from algo import Algo
 
 class SparkPG(Algo):
+    def __enter__(self):
+        self.spark = (
+            SparkSession.builder.appName("pageRank")
+                .config("spark.jars.packages", "graphframes:graphframes:0.8.2-spark3.1-s_2.12")
+                .getOrCreate()
+        )
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.spark.stop()
+
     def _page_rank(self, graph: GraphFrame, alpha=0.85, eps=1e-8, max_iter=20):
         N = graph.vertices.count()
         if N == 0:
@@ -45,8 +56,8 @@ class SparkPG(Algo):
         final_vertices = vertices.join(ranks, "id", how="left")
         return GraphFrame(final_vertices, edges)
 
-    def _get_graph_frame_from_dataset(self, spark, dataset):
-        raw_edges = spark.read.text(dataset)
+    def load_data_from_dataset(self, dataset):
+        raw_edges = self.spark.read.text(dataset)
 
         edges = (
             raw_edges
@@ -66,15 +77,6 @@ class SparkPG(Algo):
 
         return GraphFrame(vertices, edges)
 
-    def run(self, dataset):
-        spark = (
-            SparkSession.builder.appName("pageRank")
-                .config("spark.jars.packages", "graphframes:graphframes:0.8.2-spark3.1-s_2.12")
-                .getOrCreate()
-        )
-
-        graph_frame = self._get_graph_frame_from_dataset(spark, dataset)
+    def run(self, graph_frame):
         self._page_rank(graph_frame)
         # result_graph.vertices.orderBy(F.desc("pagerank")).show(20)
-
-        spark.stop()

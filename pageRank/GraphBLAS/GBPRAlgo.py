@@ -20,7 +20,6 @@ class GBPRAlgo(Algo):
         # d = gb.Vector(float, n)
         d = d_temp.ewise_add(dmin, op=monoid.max)
 
-        t = Vector(float, n)
         rank = Vector(float, n)
         rank[:] = 1.0 / n
 
@@ -47,8 +46,8 @@ class GBPRAlgo(Algo):
         # print(sorted(rank.to_dense(), reverse=True)[:5])
         # print(rank.to_dense().sum())
 
-    def _load_edge_list_to_matrix(self, filename):
-        edges = np.loadtxt(filename, dtype=int, delimiter='\t')
+    def load_data_from_dataset(self, dataset):
+        edges = np.loadtxt(dataset, dtype=int, delimiter='\t')
 
         row_indices = edges[:, 0].tolist()
         col_indices = edges[:, 1].tolist()
@@ -56,6 +55,5 @@ class GBPRAlgo(Algo):
         adj = Matrix.from_coo(row_indices, col_indices, 1)
         return adj
 
-    def run(self, dataset):
-        matrix = self._load_edge_list_to_matrix(dataset)
+    def run(self, matrix):
         self._page_rank(matrix)

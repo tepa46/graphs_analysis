@@ -18,8 +18,8 @@ RUN wget -q https://dlcdn.apache.org/hadoop/common/hadoop-3.4.1/hadoop-3.4.1.tar
     && rm /tmp/hadoop.tar.gz \
     && mv /opt/hadoop-3.4.1 /opt/hadoop
 
-#ENV JAVA_HOME=/usr/lib/jvm/java-18-openjdk-amd64
-ENV JAVA_HOME=/usr/lib/jvm/java-18-openjdk-arm64
+# ENV JAVA_HOME=/usr/lib/jvm/java-18-openjdk-arm64
+ENV JAVA_HOME=/usr/lib/jvm/java-18-openjdk-amd64
 ENV HADOOP_HOME=/opt/hadoop
 ENV PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
 
@@ -37,4 +37,4 @@ COPY utils.py .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-#CMD ["python3", "ЧТО-ТО.py"]
+CMD ["python3", "-u", "bench_runner.py"]

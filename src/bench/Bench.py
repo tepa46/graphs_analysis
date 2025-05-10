@@ -1,4 +1,5 @@
 import timeit
+import statistics
 from pathlib import Path
 
 from src.algo.algo import Algo
@@ -19,7 +20,12 @@ class Bench:
         pass
 
     def _run_bench(self, algo: Algo, data, additional_data=None):
-        return timeit.timeit(lambda: algo.run(data, additional_data), number=RUN_NUMBER) / RUN_NUMBER
+        times = [
+            timeit.timeit(lambda: algo.run(data, additional_data), number=1)
+            for _ in range(RUN_NUMBER)
+        ]
+
+        return statistics.mean(times), statistics.stdev(times)
 
     def run_bench(self, algo: Algo):
         datasets = get_datasets_path()
@@ -30,5 +36,5 @@ class Bench:
             additional_data_lst = self.collect_additional_data_lst(dataset)
 
             for (addition_data_name, addition_data) in additional_data_lst:
-                mean_exec_time = self._run_bench(algo, data, addition_data)
-                print(f'{dataset_name} {addition_data_name}: {1000 * mean_exec_time:.3f} \n')
+                mean_exec_time, std_time = self._run_bench(algo, data, addition_data)
+                print(f'{dataset_name} {addition_data_name}: {1000 * mean_exec_time:.3f} {1000 * std_time:.3f} \n')

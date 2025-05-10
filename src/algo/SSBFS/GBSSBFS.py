@@ -4,7 +4,7 @@ from graphblas import Matrix, Vector, semiring, binary
 from src.algo.algo import Algo
 
 
-class SingleSourceParentBFSAlgo(Algo):
+class GBSSBFS(Algo):
     def _sspbfs(self, graph_matrix, source):
         n = graph_matrix.nrows
         # print(n)

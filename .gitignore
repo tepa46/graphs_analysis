@@ -2,9 +2,9 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=pycharm+all,macos,c++
 
 
-output/
-pageRank/Spark/.venv
-pageRank/GraphBLAS/.venv
+.venv/
+datasets/
+out/
 
 ### C++ ###
 # Prerequisites

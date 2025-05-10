@@ -2,7 +2,7 @@ from pathlib import Path
 
 import numpy as np
 
-PATH_TO_DATASETS = "datasets"
+PATH_TO_DATASETS = "../datasets"
 SOURCES = 'sources'
 SSBFS = 'SSBFS'
 MSBFS = 'MSBFS'

@@ -2,8 +2,8 @@ from pathlib import Path
 
 import numpy as np
 
-from bench.Bench import Bench
-from dataset_utils import get_sources_paths_for_bfs_dataset
+from src.bench.Bench import Bench
+from src.dataset_utils import get_sources_paths_for_bfs_dataset
 
 
 class MSBFSBench(Bench):

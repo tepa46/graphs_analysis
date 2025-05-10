@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from datetime import datetime
 
-BENCHMARKS_DIR_PATH = "../benchmarks"
+BENCHMARKS_DIR_PATH = "../../out/benchmarks"
 PLOT_DIRNAME = "../output/graphs"
 
 

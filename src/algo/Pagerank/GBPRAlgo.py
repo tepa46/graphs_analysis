@@ -1,7 +1,7 @@
 import numpy as np
 from graphblas import Matrix, Vector, binary, monoid, semiring, unary
 
-from algo import Algo
+from src.algo.algo import Algo
 
 
 class GBPRAlgo(Algo):

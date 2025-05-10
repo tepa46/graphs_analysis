@@ -1,16 +1,14 @@
-from pyspark.sql import SparkSession, functions as F
-from graphframes import GraphFrame
-from pyspark.sql.functions import col, lit, coalesce, abs as sql_abs, max as sql_max, sum as sql_sum
+from pyspark.sql import SparkSession
 
-from algo import Algo
+from src.algo.algo import Algo
 
 
 class SparkPG(Algo):
     def __enter__(self):
         self.spark = (
             SparkSession.builder.appName("pageRank")
-                .config("spark.jars.packages", "graphframes:graphframes:0.8.2-spark3.1-s_2.12")
-                .getOrCreate()
+            .config("spark.jars.packages", "graphframes:graphframes:0.8.2-spark3.1-s_2.12")
+            .getOrCreate()
         )
         return self
 
@@ -24,11 +22,11 @@ class SparkPG(Algo):
             # print(f"Iteration {i}")
             contrib = (
                 edges_rdd.join(ranks)
-                    .flatMap(lambda x: [(x[1][0], x[1][1] / len(x[1]))])
+                .flatMap(lambda x: [(x[1][0], x[1][1] / len(x[1]))])
             )
             new_ranks = (
                 contrib.reduceByKey(lambda x, y: x + y)
-                    .mapValues(lambda rank: (1 - alpha) + alpha * rank)
+                .mapValues(lambda rank: (1 - alpha) + alpha * rank)
             )
 
             diff = ranks.join(new_ranks)
@@ -44,10 +42,10 @@ class SparkPG(Algo):
 
         return (
             raw_edges.rdd
-                .filter(lambda line: not line.value.startswith("#"))
-                .filter(lambda line: len(line.value) > 0)
-                .map(lambda line: line.value.split())
-                .map(lambda pair: (pair[0], pair[1]))
+            .filter(lambda line: not line.value.startswith("#"))
+            .filter(lambda line: len(line.value) > 0)
+            .map(lambda line: line.value.split())
+            .map(lambda pair: (pair[0], pair[1]))
         )
 
     def run(self, graph_frame):

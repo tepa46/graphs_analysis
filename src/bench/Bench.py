@@ -1,8 +1,8 @@
 import timeit
 from pathlib import Path
 
-from algo import Algo
-from dataset_utils import get_datasets_path
+from src.algo.algo import Algo
+from src.dataset_utils import get_datasets_path
 
 RUN_NUMBER = 20
 

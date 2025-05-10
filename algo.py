@@ -1,7 +1,7 @@
 class Algo:
     # Extracts data from dataset in the format required for run algorithm
     #
-    # NOTE! Use received data as [data] argument in the run method.
+    # NOTE! Use received data as [data] argument in [run] method.
     def load_data_from_dataset(self, dataset):
         pass
 

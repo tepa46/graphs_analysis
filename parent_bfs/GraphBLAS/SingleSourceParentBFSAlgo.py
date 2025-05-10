@@ -5,7 +5,7 @@ from algo import Algo
 
 
 class SingleSourceParentBFSAlgo(Algo):
-    def _sspbfs(self, graph_matrix, source: int = 0):
+    def _sspbfs(self, graph_matrix, source):
         n = graph_matrix.nrows
         # print(n)
         # print(graph_matrix.to_dense(fill_value=-1))
@@ -55,5 +55,5 @@ class SingleSourceParentBFSAlgo(Algo):
         adj = Matrix.from_coo(row_indeces, col_indices, True)
         return adj
 
-    def run(self, matrix):
-        self._sspbfs(matrix)
+    def run(self, matrix, additional_data=None):
+        self._sspbfs(matrix, additional_data)

@@ -55,5 +55,5 @@ class GBPRAlgo(Algo):
         adj = Matrix.from_coo(row_indices, col_indices, 1)
         return adj
 
-    def run(self, matrix):
+    def run(self, matrix, additional_data=None):
         self._page_rank(matrix)

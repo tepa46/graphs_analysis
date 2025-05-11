@@ -24,7 +24,7 @@ WORKDIR /app/src
 COPY src/ .
 
 WORKDIR /app
-COPY docker/SSBFS/GraphBLAS/requirements.txt .
+COPY docker/Pagerank/GraphBLAS/requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 

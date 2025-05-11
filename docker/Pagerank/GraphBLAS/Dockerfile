@@ -21,14 +21,11 @@ WORKDIR /datasets
 COPY datasets .
 
 WORKDIR /app/src
+COPY src/ .
 
-COPY pageRank/GraphBLAS/requirements.txt .
-COPY pageRank/GraphBLAS/GBPRAlgo.py .
-COPY pageRank/GraphBLAS/bench_runner.py .
-COPY algo.py .
-COPY bench.py .
-COPY utils.py .
+WORKDIR /app
+COPY docker/SSBFS/GraphBLAS/requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python3", "-u", "bench_runner.py"]
+CMD ["python3", "-m", "src.bench.PageRank.GBBenchRunner"]

@@ -1,6 +1,6 @@
+from src.algo.Pagerank.GBPR import GBPR
 from src.bench.PageRank.PageRankBench import PageRankBench
-from pageRank.GraphBLAS.GBPRAlgo import GBPRAlgo
 
 if __name__ == "__main__":
-    algo = GBPRAlgo()
+    algo = GBPR()
     PageRankBench().run_bench(algo)

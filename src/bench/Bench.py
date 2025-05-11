@@ -37,4 +37,4 @@ class Bench:
 
             for (addition_data_name, addition_data) in additional_data_lst:
                 mean_exec_time, std_time = self._run_bench(algo, data, addition_data)
-                print(f'{dataset_name} {addition_data_name}: {1000 * mean_exec_time:.3f} {1000 * std_time:.3f} \n')
+                print(f'{dataset_name} {addition_data_name}: {1000 * mean_exec_time:.3f} {1000 * std_time:.3f}')

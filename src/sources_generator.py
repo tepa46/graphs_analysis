@@ -2,7 +2,7 @@ import random
 
 from pathlib import Path
 
-from src.dataset_utils import get_datasets_path, get_nodes_number, PATH_TO_DATASETS, get_nodes_list, SOURCES, SSBFS, MSBFS
+from dataset_utils import get_datasets_path, get_nodes_number, PATH_TO_DATASETS, get_nodes_list, SOURCES, SSBFS, MSBFS
 
 random.seed(42)
 

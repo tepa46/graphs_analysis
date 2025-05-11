@@ -24,9 +24,21 @@ def get_nodes_number(dataset):
     return len(lst)
 
 
-def get_sources_paths_for_bfs_dataset(dataset):
+def get_sources_paths_for_bfs_dataset(all_sources_paths, dataset_name):
+    return [i for i in all_sources_paths.iterdir() if i.stem.startswith(dataset_name)]
+
+
+def get_sources_paths_for_ssbfs_dataset(dataset):
     dataset_path = Path(dataset)
     source_path_parts = [str(dataset_path.parent), SOURCES, SSBFS]
-    sources_path = Path(*source_path_parts)
 
-    return [i for i in sources_path.iterdir() if i.stem.startswith(dataset_path.stem)]
+    return get_sources_paths_for_bfs_dataset(Path(*source_path_parts), dataset_path.stem)
+
+
+def get_sources_paths_for_msbfs_dataset(dataset):
+    dataset_path = Path(dataset)
+    source_path_parts = [str(dataset_path.parent), SOURCES, MSBFS]
+
+    a = get_sources_paths_for_bfs_dataset(Path(*source_path_parts), dataset_path.stem)
+    return a
+

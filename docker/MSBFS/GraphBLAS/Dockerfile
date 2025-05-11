@@ -28,4 +28,4 @@ COPY docker/SSBFS/GraphBLAS/requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python3", "-m", "src.bench.SSPBFS.GBBenchRunner"]
+# CMD ["python3", "-m", "src.bench.MSPBFS.GBBenchRunner"]

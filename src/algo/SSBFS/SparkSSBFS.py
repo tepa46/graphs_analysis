@@ -4,7 +4,7 @@ from pyspark.sql.types import StructType, StructField, IntegerType
 from pyspark.sql import functions as F  # <-- Добавить эту строку
 
 
-class SSBFS:
+class SparkSSBFS:
     def __enter__(self):
         self.spark = SparkSession.builder \
             .appName("SSBFS") \
@@ -92,7 +92,7 @@ class SSBFS:
 
 def main():
     path = "datasets/connected_graph_10k_maxdepth3.txt"  # Проверьте путь
-    with SSBFS() as algo:
+    with SparkSSBFS() as algo:
         data = algo.load_data_from_dataset(path)
         print("Total edges:", data.count())
         data.show(5, truncate=False)

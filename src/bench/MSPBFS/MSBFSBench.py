@@ -13,7 +13,10 @@ class MSBFSBench(Bench):
         source_paths = get_sources_paths_for_msbfs_dataset(dataset)
         for source_path in source_paths:
             source_path_name = Path(source_path).stem
-            sources = np.loadtxt(source_path, dtype=int, delimiter=' ')
+            sources = np.loadtxt(source_path, dtype=int, delimiter=' ').tolist()
+            if sources is not list:
+                sources = [sources]
+
             additional_data_lst.append((source_path_name, sources))
 
         return additional_data_lst

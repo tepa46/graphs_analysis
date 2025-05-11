@@ -23,8 +23,8 @@ ENV JAVA_HOME=/usr/lib/jvm/java-18-openjdk-amd64
 ENV HADOOP_HOME=/opt/hadoop
 ENV PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
 
-WORKDIR app/datasets
-COPY datasets .
+WORKDIR /app/datasets
+COPY datasets/ .
 
 WORKDIR /app/src
 COPY src/ .

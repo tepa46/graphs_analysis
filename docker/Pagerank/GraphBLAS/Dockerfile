@@ -17,8 +17,8 @@ RUN git clone -b v10.0.3 https://github.com/DrTimothyAldenDavis/GraphBLAS.git &&
     make install && \
     ldconfig
 
-WORKDIR app/datasets
-COPY datasets .
+WORKDIR /app/datasets
+COPY datasets/ .
 
 WORKDIR /app/src
 COPY src/ .

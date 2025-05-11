@@ -17,8 +17,8 @@ RUN git clone -b v10.0.3 https://github.com/DrTimothyAldenDavis/GraphBLAS.git &&
     make install && \
     ldconfig
 
-WORKDIR app/datasets
-COPY datasets .
+WORKDIR /app/datasets
+COPY datasets/ .
 
 WORKDIR /app/src
 COPY src/ .
@@ -28,4 +28,5 @@ COPY docker/SSBFS/GraphBLAS/requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-# CMD ["python3", "-m", "src.bench.MSPBFS.GBBenchRunner"]
+CMD ["python3", "-m", "src.bench.MSPBFS.GBBenchRunner"]
+# python3 -m src.bench.MSPBFS.GBBenchRunner

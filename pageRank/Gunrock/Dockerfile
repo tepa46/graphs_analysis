@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM nvidia/cuda:12.2.0-devel-ubuntu22.04
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -15,24 +15,22 @@ RUN wget https://github.com/Kitware/CMake/releases/download/v3.27.9/cmake-3.27.9
     ./cmake-3.27.9-linux-x86_64.sh --skip-license --prefix=/usr/local && \
     rm cmake-3.27.9-linux-x86_64.sh
 
-#CUDA toolkit
-#https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&Distribution=Ubuntu&target_version=24.04&target_type=deb_network
-RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb \
-    && dpkg -i cuda-keyring_1.1-1_all.deb \
-    && apt-get update \
-    && apt-get -y install cuda-toolkit-12-9
-
-ENV PATH="/usr/local/cuda/bin:${PATH}"
-ENV LD_LIBRARY_PATH="/usr/local/cuda/lib64:${LD_LIBRARY_PATH}"
+WORKDIR /datasets
+COPY datasets .
 
 WORKDIR /app/src
 
-COPY CMakeLists.txt .
-COPY main.cu .
-COPY cmake/FetchEssentials.cmake cmake/
+RUN git clone https://github.com/gunrock/gunrock.git && \
+    cd gunrock && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    make pr -j$(nproc)
 
-RUN mkdir build \
-    && cd build \
-    && cmake .. \
-    && make -j6 \
-    && bin/gunrock_bench
+COPY pageRank/Gunrock/GunrockPR.py .
+COPY pageRank/Gunrock/bench_runner.py .
+COPY algo.py .
+COPY bench.py .
+COPY utils.py .
+
+CMD ["python3", "-u", "bench_runner.py"]

@@ -10,7 +10,7 @@ random.seed(42)
 def generate_sources(dataset, sources_number):
     nodes = get_nodes_list(dataset)
 
-    return random.sample(nodes, sources_number)
+    return random.sample(nodes, min(len(nodes), sources_number))
 
 
 SINGLE_SOURCE_EX_NUMBER = 10
@@ -54,26 +54,23 @@ def prepare_sources_for_bfs():
         # multi sources
         ms_path = get_path_for_ms()
 
-        # 10%
-        num10per = int(nodes_number * 0.1 + 1)
-        ms10 = generate_sources(dataset, num10per)
-        ms_path_parts = [str(ms_path), f"{Path(dataset).stem}10.txt"]
-        ms_path10 = Path(*ms_path_parts)
-        save_sources(ms_path10, ms10)
+        # 16
+        ms16 = generate_sources(dataset, 16)
+        ms_path_parts = [str(ms_path), f"{Path(dataset).stem}16.txt"]
+        ms_path16 = Path(*ms_path_parts)
+        save_sources(ms_path16, ms16)
 
-        # 15%
-        num15per = int(nodes_number * 0.15 + 1)
-        ms15 = generate_sources(dataset, num15per)
-        ms_path_parts = [str(ms_path), f"{Path(dataset).stem}15.txt"]
-        ms_path15 = Path(*ms_path_parts)
-        save_sources(ms_path15, ms15)
+        # 32
+        ms32 = generate_sources(dataset, 32)
+        ms_path_parts = [str(ms_path), f"{Path(dataset).stem}32.txt"]
+        ms_path32 = Path(*ms_path_parts)
+        save_sources(ms_path32, ms32)
 
-        # 30%
-        num30per = int(nodes_number * 0.30 + 1)
-        ms30 = generate_sources(dataset, num30per)
-        ms_path_parts = [str(ms_path), f"{Path(dataset).stem}30.txt"]
-        ms_path30 = Path(*ms_path_parts)
-        save_sources(ms_path30, ms30)
+        # 64
+        ms64 = generate_sources(dataset, 64)
+        ms_path_parts = [str(ms_path), f"{Path(dataset).stem}64.txt"]
+        ms_path64 = Path(*ms_path_parts)
+        save_sources(ms_path64, ms64)
 
 
 if __name__ == "__main__":

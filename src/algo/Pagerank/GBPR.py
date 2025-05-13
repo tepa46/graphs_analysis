@@ -15,7 +15,6 @@ class GBPR(Algo):
         dmin = Vector(float, n)
         dmin[:] = 1.0 / alpha
 
-        # d = gb.Vector(float, n)
         d = d_temp.ewise_add(dmin, op=monoid.max)
 
         rank = Vector(float, n)

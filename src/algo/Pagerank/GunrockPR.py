@@ -3,6 +3,7 @@ import subprocess
 
 from src.algo.algo import Algo
 from src.dataset_utils import get_mtx_from_txt
+from pathlib import Path
 
 class GunrockPR(Algo):
 
@@ -12,6 +13,8 @@ class GunrockPR(Algo):
         return get_mtx_from_txt(dataset)
 
     def run(self, data, additional_data=None):
+        project_root = Path(__file__).resolve().parents[3]
+        pr_root = project_root / "gunrock" / "build" / "bin" / "pr"
         n_nodes, edges = data
         with open(self.__default_graph_path, 'w') as f:
             f.write("%%MatrixMarket matrix coordinate pattern general\n")
@@ -19,6 +22,6 @@ class GunrockPR(Algo):
             for u, v in edges:
                 f.write(f"{u+1} {v+1}\n")
 
-        subprocess.run(["gunrock/build/bin/pr", "-m", self.__default_graph_path])
+        subprocess.run([pr_root, "-m", self.__default_graph_path])
 
         os.remove(self.__default_graph_path)

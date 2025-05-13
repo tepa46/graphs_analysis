@@ -15,12 +15,7 @@ RUN wget https://github.com/Kitware/CMake/releases/download/v3.27.9/cmake-3.27.9
     ./cmake-3.27.9-linux-x86_64.sh --skip-license --prefix=/usr/local && \
     rm cmake-3.27.9-linux-x86_64.sh
 
-WORKDIR /app/datasets
-COPY datasets/ .
-
-WORKDIR /app/src
-COPY src/ .
-
+WORKDIR /app
 RUN git clone https://github.com/gunrock/gunrock.git && \
     cd gunrock && \
     mkdir build && \
@@ -28,4 +23,15 @@ RUN git clone https://github.com/gunrock/gunrock.git && \
     cmake .. && \
     make pr -j$(nproc)
 
-CMD ["python3", "-u", "src.bench.PageRank.PRGunrockBench"]
+WORKDIR /app/datasets
+COPY datasets/ .
+
+WORKDIR /app/src
+COPY src/ .
+
+WORKDIR /app
+COPY docker/SSBFS/GraphBLAS/requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+CMD ["python3", "-m", "src.bench.PageRank.PRGunrockBench"]

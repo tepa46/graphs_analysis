@@ -42,3 +42,14 @@ def get_sources_paths_for_msbfs_dataset(dataset):
     a = get_sources_paths_for_bfs_dataset(Path(*source_path_parts), dataset_path.stem)
     return a
 
+def get_mtx_from_txt(input_path):
+    with open(input_path, 'r') as f:
+        edges = [tuple(map(int, line.strip().split())) for line in f if line.strip()]
+
+    nodes = set()
+    for u, v in edges:
+        nodes.add(u)
+        nodes.add(v)
+    n_nodes = max(nodes) + 1
+
+    return n_nodes, edges

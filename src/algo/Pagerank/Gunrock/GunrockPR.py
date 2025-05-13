@@ -9,12 +9,9 @@ class GunrockPR(Algo):
 
     __default_graph_path = "graph.mtx"
 
-    def load_data_from_dataset(self, dataset):
-        return get_mtx_from_txt(dataset)
-
-    def run(self, data, additional_data=None):
-        project_root = Path(__file__).resolve().parents[3]
-        pr_root = project_root / "gunrock" / "build" / "bin" / "pr"
+    def __page_rank(self, data, alpha=0.85, eps=1e-6):
+        project_root = Path(__file__).resolve().parent
+        pr_root = project_root / "build" / "bin" / "pr"
         n_nodes, edges = data
         with open(self.__default_graph_path, 'w') as f:
             f.write("%%MatrixMarket matrix coordinate pattern general\n")
@@ -22,6 +19,12 @@ class GunrockPR(Algo):
             for u, v in edges:
                 f.write(f"{u+1} {v+1}\n")
 
-        subprocess.run([pr_root, "-m", self.__default_graph_path])
+        subprocess.run([pr_root, self.__default_graph_path, str(alpha), str(eps)])
 
         os.remove(self.__default_graph_path)
+
+    def load_data_from_dataset(self, dataset):
+        return get_mtx_from_txt(dataset)
+
+    def run(self, data, additional_data=None):
+        self.__page_rank(data)

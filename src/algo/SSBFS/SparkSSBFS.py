@@ -91,7 +91,7 @@ class SparkSSBFS:
 
 
 def main():
-    path = "datasets/connected_graph_10k_maxdepth3.txt"  # Проверьте путь
+    path = "tmp/test.txt"  # Проверьте путь
     with SparkSSBFS() as algo:
         data = algo.load_data_from_dataset(path)
         print("Total edges:", data.count())

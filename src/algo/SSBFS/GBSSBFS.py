@@ -41,10 +41,7 @@ class GBSSBFS(Algo):
         d_row_indices = edges[:, 0].tolist()
         d_col_indices = edges[:, 1].tolist()
 
-        row_indeces = d_row_indices + d_col_indices
-        col_indices = d_col_indices + d_row_indices
-
-        adj = Matrix.from_coo(row_indeces, col_indices, True)
+        adj = Matrix.from_coo(d_row_indices, d_col_indices, True)
         return adj
 
     def run(self, matrix, additional_data=None):

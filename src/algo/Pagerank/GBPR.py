@@ -5,7 +5,7 @@ from src.algo.algo import Algo
 
 
 class GBPR(Algo):
-    def _page_rank(self, graph_matrix: Matrix, alpha=0.85, eps=1e-8, max_iter=20):
+    def _page_rank(self, graph_matrix: Matrix, alpha=0.85, eps=1e-6, max_iter=100):
         n = graph_matrix.nrows
 
         outdeg = graph_matrix.reduce_rowwise(monoid.plus)

@@ -32,7 +32,7 @@ class SparkPG(Algo):
 
         return full_links
 
-    def run(self, data, additional_data=None, alpha=0.85, eps=1e-8, max_iter=20):
+    def run(self, data, additional_data=None, alpha=0.85, eps=1e-6, max_iter=100):
         all_nodes = data.map(lambda k: k[0])
         N = all_nodes.count()
         ranks = all_nodes.map(lambda n: (n, 1.0 / N))

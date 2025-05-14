@@ -22,7 +22,7 @@ class SparkPG(Algo):
         self.spark.stop()
 
     def load_data_from_dataset(self, dataset):
-        lines = self.spark.read.text(dataset).rdd.map(lambda r: r[0])
+        lines = self.spark.read.text(str(dataset)).rdd.map(lambda r: r[0])
         links_raw = lines.map(parseNeighbors).distinct()
         all_nodes = links_raw.flatMap(lambda x: [x[0], x[1]]).distinct().cache()
 
@@ -39,6 +39,7 @@ class SparkPG(Algo):
         teleport = (1.0 - alpha) / N
 
         for i in range(max_iter):
+            print(f'Iteration {i + 1}')
             prev_ranks = ranks
 
             dangling_mass = (data.filter(lambda x: len(x[1]) == 0).join(ranks).map(lambda n: n[1][1]).sum())
@@ -54,11 +55,12 @@ class SparkPG(Algo):
             if error < eps:
                 break
 
-            total = ranks.values().sum()
-            print(f"Iteration {i + 1}: error={error:.6e}, dangling_mass={dangling_mass:.6f}, total_rank={total:.6f}")
+            # total = ranks.values().sum()
+            # print(f"Iteration {i + 1}: error={error:.6e}, dangling_mass={dangling_mass:.6f}, total_rank={total:.6f}")
 
-        for node, rank in ranks.collect():
-            print(f"{node}\t{rank:.6f}")
+        ranks.count()
+        # for node, rank in ranks.collect():
+        #     print(f"{node}\t{rank:.6f}")
 
 
 def computeContribs(urls: ResultIterable[str], rank: float) -> Iterable[Tuple[str, float]]:

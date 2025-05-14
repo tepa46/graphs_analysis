@@ -48,6 +48,5 @@ int main(int argc, char **argv) {
 
 	float gpu_elapsed = gunrock::bfs::run(G, single_source, distances.data().get(), predecessors.data().get());
 
-	std::cout << "Source node: " << single_source << '\n';
-	print::head(predecessors, 30, "Predecessors");
+	std::cout << "Time : " << gpu_elapsed << " (ms)" << std::endl;
 }

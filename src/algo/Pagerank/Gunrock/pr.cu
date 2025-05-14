@@ -45,6 +45,6 @@ int main(int argc, char **argv) {
 	thrust::device_vector <weight_t> p(n_vertices);
 
 	float gpu_elapsed = gunrock::pr::run(G, alpha, tol, p.data().get());
-	print::head(p, 8, "First eight ranks");
+	std::cout << "Time : " << gpu_elapsed << " (ms)" << std::endl;
 	return 0;
 }

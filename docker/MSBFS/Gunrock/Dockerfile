@@ -22,16 +22,15 @@ WORKDIR /app/src
 COPY src/ .
 
 WORKDIR /app
-COPY docker/SSBFS/Gunrock/requirements.txt .
+COPY docker/MSBFS/Gunrock/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-WORKDIR /app/src/algo/SSBFS/Gunrock
+WORKDIR /app/src/algo/MSBFS/Gunrock
 RUN mkdir build
 
-WORKDIR /app/src/algo/SSBFS/Gunrock/build
+WORKDIR /app/src/algo/MSBFS/Gunrock/build
 RUN cmake ..
-RUN make -j14 ssbfs
+RUN make -j14 msbfs
 
 WORKDIR /app
-
-CMD ["python3", "-m", "src.bench.SSPBFS.SSBFSGunrockBench"]
+CMD ["python3", "-m", "src.bench.MSPBFS.MSBFSGunrockBench"]

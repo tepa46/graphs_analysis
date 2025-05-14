@@ -30,7 +30,7 @@ RUN mkdir build
 
 WORKDIR /app/src/algo/Pagerank/Gunrock/build
 RUN cmake ..
-RUN make -j6 pr
+RUN make -j14 pr
 
 WORKDIR /app
 

@@ -1,15 +1,16 @@
 #pragma once
 
 #include <gunrock/algorithms/algorithms.hxx>
+#include <vector>
 
 namespace gunrock {
 	namespace bfs {
 
 		template<typename vertex_t>
 		struct param_t {
-			vertex_t single_source;
+			std::vector <vertex_t> sources;
 
-			param_t(vertex_t _single_source) : single_source(_single_source) {}
+			param_t(const std::vector <vertex_t> &_sources) : sources(_sources) {}
 		};
 
 		template<typename vertex_t>
@@ -49,8 +50,11 @@ namespace gunrock {
 				thrust::fill(thrust::device, d_predecessors, d_predecessors + n_vertices, -1);
 				thrust::fill(thrust::device, d_distances + 0, d_distances + n_vertices,
 							 std::numeric_limits<vertex_t>::max());
-				thrust::fill(thrust::device, d_distances + this->param.single_source,
-							 d_distances + this->param.single_source + 1, 0);
+				for (size_t i = 0; i < this->param.sources.size(); ++i) {
+					vertex_t s = this->param.sources[i];
+					thrust::fill(thrust::device, d_predecessors + s, d_predecessors + s + 1, s);
+					thrust::fill(thrust::device, d_distances + s, d_distances + s + 1, 0);
+				}
 			}
 		};
 
@@ -68,7 +72,9 @@ namespace gunrock {
 			void prepare_frontier(frontier_t *f,
 								  gcuda::multi_context_t &context) override {
 				auto P = this->get_problem();
-				f->push_back(P->param.single_source);
+				for (size_t i = 0; i < P->param.sources.size(); ++i) {
+					f->push_back(P->param.sources[i]);
+				}
 			}
 
 			void loop(gcuda::multi_context_t &context) override {
@@ -76,7 +82,7 @@ namespace gunrock {
 				auto P = this->get_problem();
 				auto G = P->get_graph();
 
-				auto single_source = P->param.single_source;
+				auto sources = P->param.sources;
 				auto distances = P->result.distances;
 				auto visited = P->visited.data().get();
 				auto predecessors = P->result.predecessors;
@@ -84,7 +90,7 @@ namespace gunrock {
 				auto iteration = this->iteration;
 
 				auto
-				search = [distances, single_source, iteration, predecessors]
+				search = [distances, sources, iteration, predecessors]
 				__host__
 				__device__(
 						vertex_t const&source,
@@ -109,7 +115,7 @@ namespace gunrock {
 
 		template<typename graph_t>
 		float run(graph_t &G,
-				  typename graph_t::vertex_type &single_source,
+				  std::vector<typename graph_t::vertex_type> &sources,
 				  typename graph_t::vertex_type *distances,
 				  typename graph_t::vertex_type *predecessors,
 				  std::shared_ptr <gcuda::multi_context_t> context =
@@ -120,7 +126,7 @@ namespace gunrock {
 			using param_type = param_t<vertex_t>;
 			using result_type = result_t<vertex_t>;
 
-			param_type param(single_source);
+			param_type param(sources);
 			result_type result(distances, predecessors);
 
 			using problem_type = problem_t<graph_t, param_type, result_type>;

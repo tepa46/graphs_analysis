@@ -21,7 +21,13 @@ RUN wget -q https://dlcdn.apache.org/hadoop/common/hadoop-3.4.1/hadoop-3.4.1.tar
 # ENV JAVA_HOME=/usr/lib/jvm/java-18-openjdk-arm64
 ENV JAVA_HOME=/usr/lib/jvm/java-18-openjdk-amd64
 ENV HADOOP_HOME=/opt/hadoop
+ENV HADOOP_HDFS_HOME=$HADOOP_HOME
+ENV HADOOP_MAPRED_HOME=$HADOOP_HOME
+ENV HADOOP_COMMON_HOME=$HADOOP_HOME
+ENV HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
+ENV HADOOP_OPTS="$HADOOP_OPTS -Djava.library.path=$HADOOP_HOME/lib/native"
 ENV PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+ENV LD_LIBRARY_PATH=$HADOOP_HOME/lib/native
 
 WORKDIR /app/datasets
 COPY datasets/ .
@@ -34,5 +40,5 @@ COPY docker/SSBFS/GraphBLAS/requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python3", "-m", "src.bench.PageRank.SparkBenchRunner"]
+#CMD ["python3", "-m", "src.bench.PageRank.SparkBenchRunner"]
 

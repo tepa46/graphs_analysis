@@ -1,4 +1,4 @@
-from src.algo.Pagerank.SparkPR import SparkPG
+from src.algo.Pagerank.PysparkPagerank import SparkPG
 from src.bench.PageRank.PageRankBench import PageRankBench
 
 if __name__ == "__main__":

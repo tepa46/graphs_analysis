@@ -2,18 +2,23 @@ from pyspark.sql import SparkSession
 from pyspark import StorageLevel
 from pyspark.sql import functions as F
 from pyspark.sql.types import StructType, StructField, LongType, IntegerType
+import shutil
 
 
 class SparkMSBFS:
     def __enter__(self):
+        self.tmp_path = "/tmp/graph_checkpoints"
         self.spark = SparkSession.builder \
             .appName("MS-BFS") \
             .master("local[*]") \
             .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer") \
+            .config("spark.cleaner.referenceTracking.cleanCheckpoints", "true") \
             .config("spark.driver.memory", "4g") \
             .config("spark.executor.memory", "4g") \
+            .config("spark.memory.offHeap.enabled", "true") \
+            .config("spark.memory.offHeap.size", "4g") \
             .getOrCreate()
-        self.spark.sparkContext.setCheckpointDir("/tmp/graph_checkpoints")
+        self.spark.sparkContext.setCheckpointDir(self.tmp_path)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -70,7 +75,7 @@ class SparkMSBFS:
                 visited.select("vertex", "src"),
                 on=["vertex", "src"],
                 how="left_anti"
-            ).persist(StorageLevel.MEMORY_ONLY)
+            ).persist(StorageLevel.MEMORY_AND_DISK)
 
             if new_front.limit(1).count() == 0:
                 break
@@ -84,24 +89,28 @@ class SparkMSBFS:
             front = front.checkpoint()
             visited = visited.checkpoint()
 
-        visited.limit(10).show()
+        # visited.limit(10).show()
+        print("ОДИН РАЗ ПОСЧИТАЛ")
         visited.unpersist()
         front.unpersist()
+
+        shutil.rmtree(self.tmp_path)
+
         return visited
 
 
 def main():
-    sources = None
-    with open("../../../datasets/sources/MSBFS/Brightkite_edges10.txt", "r") as f:
-        for line in f:
-            sources = list(map(int, line.strip().split()))
+    # sources = None
+    # with open("../../../datasets/sources/MSBFS/Brightkite_edges10.txt", "r") as f:
+    #     for line in f:
+    #         sources = list(map(int, line.strip().split()))
 
     # print(sources)
     # return
 
     sources = [44348, 48540, 35741]
     path = "../../../tmp/Brightkite_edges.txt"  # Проверьте путь
-    with SparkSSBFS() as algo:
+    with SparkMSBFS() as algo:
         data = algo.load_data_from_dataset(path)
         algo.run(data, additional_data=sources)
 

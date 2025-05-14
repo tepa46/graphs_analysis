@@ -2,16 +2,23 @@ from pyspark.sql import SparkSession
 from pyspark import StorageLevel
 from pyspark.sql import functions as F
 from pyspark.sql.types import StructType, StructField, LongType, IntegerType
+import shutil
 
 
 class SparkSSBFS:
     def __enter__(self):
+        self.tmp_path = "/tmp/graph_checkpoints"
         self.spark = SparkSession.builder \
             .appName("SS-BFS") \
             .master("local[*]") \
             .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer") \
+            .config("spark.cleaner.referenceTracking.cleanCheckpoints", "true") \
+            .config("spark.memory.offHeap.enabled", "true") \
+            .config("spark.driver.memory", "4g") \
+            .config("spark.executor.memory", "4g") \
+            .config("spark.memory.offHeap.size", "4g") \
             .getOrCreate()
-        self.spark.sparkContext.setCheckpointDir("/tmp/graph_checkpoints")
+        self.spark.sparkContext.setCheckpointDir(self.tmp_path)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -29,7 +36,7 @@ class SparkSSBFS:
         rev = df.select(F.col("dst").alias("src"), F.col("src").alias("dst"))
         edges = df.union(rev).distinct() \
             .repartition(200, "src") \
-            .persist(StorageLevel.MEMORY_ONLY)
+            .persist(StorageLevel.MEMORY_AND_DISK)
         return edges
 
     def run(self, data, additional_data=None):
@@ -47,7 +54,7 @@ class SparkSSBFS:
         tmp = [(int(additional_data), int(additional_data), 0, int(additional_data))]
         init = self.spark.createDataFrame(tmp, schema=schema)
         front = init.persist(StorageLevel.MEMORY_AND_DISK)
-        visited = init.persist(StorageLevel.MEMORY_ONLY)
+        visited = init.persist(StorageLevel.MEMORY_AND_DISK)
 
         front = front.checkpoint()
         visited = visited.checkpoint()
@@ -80,9 +87,13 @@ class SparkSSBFS:
             front = front.checkpoint()
             visited = visited.checkpoint()
 
-        visited.limit(10).show()
+        # visited.limit(10).show()
+        print("ОДИН РАЗ ПОСЧИТАЛ")
         visited.unpersist()
         front.unpersist()
+
+        shutil.rmtree(self.tmp_path)
+
         return visited
 
 

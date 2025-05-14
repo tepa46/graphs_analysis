@@ -40,4 +40,4 @@ COPY docker/SSBFS/Spark/requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python3", "-m", "src.bench.SSBFS.SparkBench"]
+CMD ["python3", "-m", "src.bench.SSPBFS.SparkBench"]

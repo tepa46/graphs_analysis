@@ -5,8 +5,6 @@ from typing import Iterable, Tuple
 from pyspark.resultiterable import ResultIterable
 from pyspark.sql import SparkSession
 from src.algo.algo import Algo
-from pyspark.mllib.linalg.distributed import *
-import numpy as np
 
 
 class SparkPG(Algo):
@@ -39,7 +37,7 @@ class SparkPG(Algo):
         teleport = (1.0 - alpha) / N
 
         for i in range(max_iter):
-            print(f'Iteration {i + 1}')
+            # print(f'Iteration {i + 1}')
             prev_ranks = ranks
 
             dangling_mass = (data.filter(lambda x: len(x[1]) == 0).join(ranks).map(lambda n: n[1][1]).sum())

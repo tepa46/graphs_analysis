@@ -36,9 +36,8 @@ WORKDIR /app/src
 COPY src/ .
 
 WORKDIR /app
-COPY docker/Pagerank/Spark/requirements.txt .
+COPY docker/MSBFS/Spark/requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python3", "-m", "src.bench.PageRank.SparkBench"]
-
+CMD ["python3", "-m", "src.bench.MSBFS.SparkBench"]

@@ -22,16 +22,16 @@ WORKDIR /app/src
 COPY src/ .
 
 WORKDIR /app
-COPY docker/Pagerank/Gunrock/requirements.txt .
+COPY docker/SSBFS/Gunrock/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-WORKDIR /app/src/algo/Pagerank/Gunrock
+WORKDIR /app/src/algo/SSBFS/Gunrock
 RUN mkdir build
 
-WORKDIR /app/src/algo/Pagerank/Gunrock/build
+WORKDIR /app/src/algo/SSBFS/Gunrock/build
 RUN cmake ..
-RUN make -j6 pr
+RUN make -j6 ssbfs
 
 WORKDIR /app
 
-CMD ["python3", "-m", "src.bench.PageRank.PRGunrockBench"]
+CMD ["python3", "-m", "src.bench.SSPBFS.SSBFSGunrockBench"]

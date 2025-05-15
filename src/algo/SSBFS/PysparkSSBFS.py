@@ -13,10 +13,7 @@ class SparkSSBFS:
             .master("local[*]") \
             .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer") \
             .config("spark.cleaner.referenceTracking.cleanCheckpoints", "true") \
-            .config("spark.memory.offHeap.enabled", "true") \
-            .config("spark.driver.memory", "4g") \
-            .config("spark.executor.memory", "4g") \
-            .config("spark.memory.offHeap.size", "4g") \
+            .config("spark.driver.memory", "8g") \
             .getOrCreate()
         self.spark.sparkContext.setCheckpointDir(self.tmp_path)
         return self
@@ -98,7 +95,7 @@ class SparkSSBFS:
 
 
 def main():
-    path = "../../../tmp/Brightkite_edges.txt"  # Проверьте путь
+    path = "../../../datasets/Email-Enron.txt"  # Проверьте путь
     with SparkSSBFS() as algo:
         data = algo.load_data_from_dataset(path)
         algo.run(data, additional_data=41905)

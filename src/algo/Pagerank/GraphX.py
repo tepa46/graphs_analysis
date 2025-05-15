@@ -14,6 +14,7 @@ class SparkGraphXPG(Algo):
             .appName("PythonPageRank") \
             .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer") \
             .config("spark.jars.packages", "graphframes:graphframes:0.8.2-spark3.1-s_2.12") \
+            .config("spark.driver.memory", "12g") \
             .getOrCreate()
         return self
 

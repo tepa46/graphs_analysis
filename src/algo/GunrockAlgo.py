@@ -1,4 +1,3 @@
-import os
 import subprocess
 
 from src.algo.algo import Algo
@@ -17,7 +16,7 @@ class GunrockAlgo(Algo):
 
     def load_data_from_dataset(self, dataset):
         n_nodes, edges = get_mtx_from_txt(dataset)
-        with open(self.__graph_path, 'w') as f:
+        with open(self.__graph_path, "w") as f:
             f.write("%%MatrixMarket matrix coordinate pattern general\n")
             f.write(f"{n_nodes} {n_nodes} {len(edges)}\n")
             for u, v in edges:

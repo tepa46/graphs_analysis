@@ -1,5 +1,5 @@
 import numpy as np
-from graphblas import Matrix, Vector, semiring, binary
+from graphblas import Matrix, semiring, binary
 
 from src.algo.algo import Algo
 
@@ -38,7 +38,7 @@ class GBMSBFS(Algo):
             front(mask=next_parents.S) << True
 
     def load_data_from_dataset(self, dataset):
-        edges = np.loadtxt(dataset, dtype=int, delimiter='\t')
+        edges = np.loadtxt(dataset, dtype=int, delimiter="\t")
 
         d_row_indices = edges[:, 0].tolist()
         d_col_indices = edges[:, 1].tolist()

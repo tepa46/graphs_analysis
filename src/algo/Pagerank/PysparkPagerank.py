@@ -11,13 +11,13 @@ from pyspark import StorageLevel
 class SparkPG(Algo):
     def __enter__(self):
         self.tmp_path = "/tmp/graph_checkpoints"
-        self.spark = SparkSession \
-            .builder \
-            .appName("PythonPageRank") \
-            .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer") \
-            .config("spark.cleaner.referenceTracking.cleanCheckpoints", "true") \
-            .config("spark.driver.memory", "4g") \
+        self.spark = (
+            SparkSession.builder.appName("PythonPageRank")
+            .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+            .config("spark.cleaner.referenceTracking.cleanCheckpoints", "true")
+            .config("spark.driver.memory", "4g")
             .getOrCreate()
+        )
         self.spark.sparkContext.setCheckpointDir(self.tmp_path)
         return self
 
@@ -38,22 +38,32 @@ class SparkPG(Algo):
     def run(self, data, additional_data=None, alpha=0.85, eps=1e-6, max_iter=100):
         all_nodes = data.map(lambda k: k[0])
         N = all_nodes.count()
-        graph = data.mapValues(lambda x: x if x else [None]).partitionBy(200).persist(StorageLevel.MEMORY_ONLY)
+        graph = (
+            data.mapValues(lambda x: x if x else [None])
+            .partitionBy(200)
+            .persist(StorageLevel.MEMORY_ONLY)
+        )
         ranks = graph.mapValues(lambda _: 1.0 / N).persist(StorageLevel.MEMORY_ONLY)
         teleport = (1.0 - alpha) / N
 
         for i in range(max_iter):
             print(i)
             contribs = graph.join(ranks).flatMap(
-                lambda x: [(n, alpha * x[1][1] / len(x[1][0])) for n in x[1][0]] if x[1][0] else []
+                lambda x: (
+                    [(n, alpha * x[1][1] / len(x[1][0])) for n in x[1][0]]
+                    if x[1][0]
+                    else []
+                )
             )
 
             total_mass = alpha * (1.0 - ranks.filter(lambda x: x[1]).values().sum())
             dangling_contrib = total_mass / N
 
-            new_ranks = contribs.reduceByKey(add) \
-                .mapValues(lambda x: x + dangling_contrib + teleport) \
+            new_ranks = (
+                contribs.reduceByKey(add)
+                .mapValues(lambda x: x + dangling_contrib + teleport)
                 .persist(StorageLevel.MEMORY_ONLY)
+            )
 
             # Проверка сходимости
             delta = ranks.join(new_ranks).map(lambda x: abs(x[1][0] - x[1][1])).sum()
@@ -67,14 +77,16 @@ class SparkPG(Algo):
         return ranks.count()
 
 
-def computeContribs(urls: ResultIterable[str], rank: float) -> Iterable[Tuple[str, float]]:
+def computeContribs(
+    urls: ResultIterable[str], rank: float
+) -> Iterable[Tuple[str, float]]:
     num_urls = len(urls)
     for url in urls:
         yield url, rank / num_urls
 
 
 def parseNeighbors(urls: str) -> Tuple[str, str]:
-    edge_pair = re.split(r'\s+', urls)
+    edge_pair = re.split(r"\s+", urls)
     return edge_pair[0], edge_pair[1]
 
 

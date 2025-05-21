@@ -1,0 +1,33 @@
+name: Lint and Format
+
+on: [push, pull_request]
+
+jobs:
+  lint-format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+
+      - name: Install Python tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install black flake8
+
+      - name: Run black (formatter)
+        run: black --check .
+
+      - name: Run flake8 (linter)
+        run: flake8 --ignore=E501 .
+
+      - name: Install clang tools
+        run: sudo apt-get update && sudo apt-get install -y clang-format clang-tidy
+
+      - name: Run clang-format (C++/CUDA formatter)
+        run: |
+          find . -type f \( -name "*.cpp" -o -name "*.c" -o -name "*.h" -o -name "*.hpp" -o -name "*.hxx" -o -name "*.cu" \) \
+          -exec clang-format --dry-run --Werror {} +

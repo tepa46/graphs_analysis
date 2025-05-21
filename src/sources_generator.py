@@ -2,7 +2,15 @@ import random
 
 from pathlib import Path
 
-from src.dataset_utils import get_datasets_path, get_nodes_number, PATH_TO_DATASETS, get_nodes_list, SOURCES, SSBFS, MSBFS
+from src.dataset_utils import (
+    get_datasets_path,
+    get_nodes_number,
+    PATH_TO_DATASETS,
+    get_nodes_list,
+    SOURCES,
+    SSBFS,
+    MSBFS,
+)
 
 random.seed(42)
 
@@ -18,11 +26,11 @@ SINGLE_SOURCE_EX_NUMBER = 10
 
 def write_to_file(filepath, text):
     filepath.parent.mkdir(parents=True, exist_ok=True)
-    filepath.write_text(text, encoding='utf-8')
+    filepath.write_text(text, encoding="utf-8")
 
 
 def save_sources(filepath, sources):
-    text = ' '.join(map(str, sources))
+    text = " ".join(map(str, sources))
     write_to_file(filepath, text)
 
 

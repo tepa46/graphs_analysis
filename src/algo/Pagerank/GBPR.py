@@ -31,21 +31,25 @@ class GBPR(Algo):
             temp = graph_matrix.T.mxv(w, op=semiring.plus_second)
             rank = teleport.ewise_add(temp)
 
-            diff = t.ewise_union(rank, op=binary.minus, left_default=0.0, right_default=0.0)
+            diff = t.ewise_union(
+                rank, op=binary.minus, left_default=0.0, right_default=0.0
+            )
             abs_diff = unary.abs(diff)
             error = float(abs_diff.reduce(monoid.plus))
             if error <= eps:
                 break
 
     def load_data_from_dataset(self, dataset):
-        edges = np.loadtxt(dataset, dtype=int, delimiter='\t')
+        edges = np.loadtxt(dataset, dtype=int, delimiter="\t")
 
         row_indices = edges[:, 0].tolist()
         col_indices = edges[:, 1].tolist()
 
         num_nodes = max(max(row_indices), max(col_indices)) + 1
 
-        adj = Matrix.from_coo(row_indices, col_indices, 1, nrows=num_nodes, ncols=num_nodes)
+        adj = Matrix.from_coo(
+            row_indices, col_indices, 1, nrows=num_nodes, ncols=num_nodes
+        )
         return adj
 
     def run(self, matrix, additional_data=None):

@@ -3,9 +3,9 @@ from pathlib import Path
 import numpy as np
 
 PATH_TO_DATASETS = "./datasets"
-SOURCES = 'sources'
-SSBFS = 'SSBFS'
-MSBFS = 'MSBFS'
+SOURCES = "sources"
+SSBFS = "SSBFS"
+MSBFS = "MSBFS"
 
 
 def get_datasets_path():
@@ -14,7 +14,7 @@ def get_datasets_path():
 
 
 def get_nodes_list(dataset):
-    edges = np.loadtxt(dataset, dtype=int, delimiter='\t')
+    edges = np.loadtxt(dataset, dtype=int, delimiter="\t")
 
     return list(set((edges[:, 0].tolist() + edges[:, 1].tolist())))
 
@@ -32,7 +32,9 @@ def get_sources_paths_for_ssbfs_dataset(dataset):
     dataset_path = Path(dataset)
     source_path_parts = [str(dataset_path.parent), SOURCES, SSBFS]
 
-    return get_sources_paths_for_bfs_dataset(Path(*source_path_parts), dataset_path.stem)
+    return get_sources_paths_for_bfs_dataset(
+        Path(*source_path_parts), dataset_path.stem
+    )
 
 
 def get_sources_paths_for_msbfs_dataset(dataset):
@@ -42,8 +44,9 @@ def get_sources_paths_for_msbfs_dataset(dataset):
     a = get_sources_paths_for_bfs_dataset(Path(*source_path_parts), dataset_path.stem)
     return a
 
+
 def get_mtx_from_txt(input_path):
-    with open(input_path, 'r') as f:
+    with open(input_path, "r") as f:
         edges = [tuple(map(int, line.strip().split())) for line in f if line.strip()]
 
     nodes = set()

@@ -42,23 +42,23 @@ class Visualizer:
 
         title = f"{algoName} with {realizationName}"
 
-        x_label = f"Dataset"
-        y_label = f"Time (ms)"
+        x_label = "Dataset"
+        y_label = "Time (ms)"
 
-        plt.grid(axis='y', linestyle='--', alpha=0.5, zorder=1)
-        plt.bar(x, y, zorder=2, edgecolor='black', width=0.5, yerr=err,
-                capsize=3)
-        plt.yscale('log')
+        plt.grid(axis="y", linestyle="--", alpha=0.5, zorder=1)
+        plt.bar(x, y, zorder=2, edgecolor="black", width=0.5, yerr=err, capsize=3)
+        plt.yscale("log")
         plt.title(title)
         plt.xlabel(x_label)
 
         plt.text(
-            0.05, 1.02,
+            0.05,
+            1.02,
             y_label,
             transform=plt.gca().transAxes,
             rotation=0,
             ha="right",
-            va="bottom"
+            va="bottom",
         )
 
         self._save_plot(f"{algoName}_{realizationName}")
@@ -85,32 +85,40 @@ class Visualizer:
         width = 0.25
         multiplier = 0
 
-        fig, ax = plt.subplots(layout='constrained', figsize=(10, 6))
+        fig, ax = plt.subplots(layout="constrained", figsize=(10, 6))
 
         for spine in ax.spines.values():
             spine.set_visible(False)
 
         for attribute, measurement in data.items():
             offset = width * multiplier
-            ax.bar(x + offset, measurement, width, label=attribute,
-                   zorder=2, edgecolor='black', capsize=3)
+            ax.bar(
+                x + offset,
+                measurement,
+                width,
+                label=attribute,
+                zorder=2,
+                edgecolor="black",
+                capsize=3,
+            )
             multiplier += 1
 
-        y_label = f"Time (ms)"
+        y_label = "Time (ms)"
         ax.text(
-            0.05, 1.02,
+            0.05,
+            1.02,
             y_label,
             transform=plt.gca().transAxes,
             rotation=0,
             ha="right",
-            va="bottom"
+            va="bottom",
         )
 
         ax.set_xticks(x + width, datasets_name)
-        ax.grid(axis='y', linestyle='--', alpha=0.5, zorder=1)
-        ax.set_yscale('log')
+        ax.grid(axis="y", linestyle="--", alpha=0.5, zorder=1)
+        ax.set_yscale("log")
         ax.legend(
-            loc='upper center',
+            loc="upper center",
             bbox_to_anchor=(0.5, 1.1),
             ncol=len(datasets_name),
             frameon=False,
@@ -129,11 +137,17 @@ def clean_plot(fig=None):
 
 
 def read_benchmark(datasetPath):
-    return {k: float(v) for line in open(datasetPath) for k, v in [line.strip().split(': ')]}
+    return {
+        k: float(v) for line in open(datasetPath) for k, v in [line.strip().split(": ")]
+    }
 
 
 def get_algo_name():
-    return [i for i in listdir(BENCHMARKS_DIR_PATH) if path.isdir(path.join(BENCHMARKS_DIR_PATH, i))]
+    return [
+        i
+        for i in listdir(BENCHMARKS_DIR_PATH)
+        if path.isdir(path.join(BENCHMARKS_DIR_PATH, i))
+    ]
 
 
 def get_realization_name(algoName):
@@ -148,5 +162,5 @@ def main():
     v.all_algo_realizations_compare_plot("Pagerank")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -6,7 +6,7 @@ import numpy as np
 from datetime import datetime
 
 BENCHMARKS_DIR_PATH = "../../out/benchmarks"
-PLOT_DIRNAME = "../output/graphs"
+PLOT_DIRNAME = "../../out/graphs"
 
 
 class Visualizer:
@@ -37,8 +37,8 @@ class Visualizer:
             return
 
         x = self.bench[algoName][realizationName].keys()
-        y = self.bench[algoName][realizationName].values()
-        err = [i * 0.25 for i in y]
+        y = [v[0] for v in self.bench[algoName][realizationName].values()]
+        err = [v[1] for v in self.bench[algoName][realizationName].values()]
 
         title = f"{algoName} with {realizationName}"
 
@@ -79,7 +79,7 @@ class Visualizer:
         for r in realizationNames:
             for k, v in self.bench[algoName][r].items():
                 datasets_name.add(k)
-                data.setdefault(r, []).append(v)
+                data.setdefault(r, []).append(v[0])
 
         x = np.arange(len(datasets_name))
         width = 0.25
@@ -137,9 +137,14 @@ def clean_plot(fig=None):
 
 
 def read_benchmark(datasetPath):
-    return {
-        k: float(v) for line in open(datasetPath) for k, v in [line.strip().split(": ")]
-    }
+    result = {}
+    with open(datasetPath) as f:
+        for line in f:
+            k, rest = line.strip().split(": ")
+            mean, std = map(float, rest.split())
+            result[k] = (mean, std)
+    return result
+
 
 
 def get_algo_name():
@@ -157,9 +162,10 @@ def get_realization_name(algoName):
 
 def main():
     v = Visualizer()
-    v.single_algo_plot("Pagerank", "spark")
-    v.single_algo_plot("Pagerank", "graphBlas")
-    v.all_algo_realizations_compare_plot("Pagerank")
+    for i in ["Pagerank", "SSBFS", "MSBFS16", "MSBFS32", "MSBFS64"]:
+        v.all_algo_realizations_compare_plot(i)
+        for j in ["Gunrock", "GraphBLAS"]:
+            v.single_algo_plot(i, j)
 
 
 if __name__ == "__main__":

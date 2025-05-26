@@ -36,21 +36,24 @@ namespace gunrock {
 			using edge_t = typename graph_t::edge_type;
 			using weight_t = typename graph_t::weight_type;
 
-			thrust::device_vector<vertex_t> visited;
-
 			void init() override {
 			}
 
 			void reset() override {
+				auto num_vertices = this->get_graph().get_number_of_vertices();
+				auto batch_size = param.sources.size();
+
 				auto d_predecessors = thrust::device_pointer_cast(this->result.predecessors);
-				auto n_vertices = this->get_graph().get_number_of_vertices();
 				auto d_distances = thrust::device_pointer_cast(this->result.distances);
-				thrust::fill(thrust::device, d_predecessors, d_predecessors + n_vertices, -1);
-				thrust::fill(thrust::device, d_distances + 0, d_distances + n_vertices, std::numeric_limits<vertex_t>::max());
-				for (size_t i = 0; i < this->param.sources.size(); ++i) {
+
+				thrust::fill(thrust::device, d_predecessors, d_predecessors + batch_size * num_vertices, -1);
+				thrust::fill(thrust::device, d_distances, d_distances + batch_size * num_vertices,
+							 std::numeric_limits<vertex_t>::max());
+
+				for (int i = 0; i < batch_size; ++i) {
 					vertex_t s = this->param.sources[i];
-					thrust::fill(thrust::device, d_predecessors + s, d_predecessors + s + 1, s);
-					thrust::fill(thrust::device, d_distances + s, d_distances + s + 1, 0);
+					d_predecessors[i * num_vertices + s] = s;
+					d_distances[i * num_vertices + s] = 0;
 				}
 			}
 		};
@@ -78,25 +81,35 @@ namespace gunrock {
 				auto P = this->get_problem();
 				auto G = P->get_graph();
 
-				auto sources = P->param.sources;
 				auto distances = P->result.distances;
-				auto visited = P->visited.data().get();
 				auto predecessors = P->result.predecessors;
-
+				auto batch_size = P->param.sources.size();
+				auto num_vertices = G.get_number_of_vertices();
 				auto iteration = this->iteration;
 
-				auto search = [distances, sources, iteration, predecessors] __host__ __device__(
-									  vertex_t const &source, vertex_t const &neighbor, edge_t const &edge,
+				auto search = [=] __host__ __device__(
+									  vertex_t const &source,
+									  vertex_t const &neighbor,
+									  edge_t const &edge,
 									  weight_t const &weight) -> bool {
-					auto old_distance = math::atomic::min(&distances[neighbor], iteration + 1);
-					if (iteration + 1 < old_distance) {
-						math::atomic::cas(&predecessors[neighbor], static_cast<vertex_t>(-1), source);
-						return true;
+					bool updated = false;
+					for (int batch = 0; batch < batch_size; ++batch) {
+						vertex_t *dist_row = distances + batch * num_vertices;
+						vertex_t *pred_row = predecessors + batch * num_vertices;
+
+						vertex_t new_dist = dist_row[source] + 1;
+						vertex_t old_dist = gunrock::math::atomic::min(&dist_row[neighbor], new_dist);
+						if (new_dist < old_dist) {
+							gunrock::math::atomic::cas(&pred_row[neighbor], static_cast<vertex_t>(-1), source);
+							updated = true;
+						}
 					}
-					return false;
+					return updated;
 				};
 
-				operators::advance::execute<operators::load_balance_t::block_mapped>(G, E, search, context);
+				gunrock::operators::advance::execute<
+						gunrock::operators::load_balance_t::block_mapped>(
+						G, E, search, context);
 			}
 		};
 

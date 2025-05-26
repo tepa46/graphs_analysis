@@ -1,3 +1,4 @@
+#include <filesystem>
 #include <gunrock/algorithms/pr.hxx>
 #include <iostream>
 
@@ -18,6 +19,7 @@ int main(int argc, char **argv) {
 	csr_t csr;
 
 	std::string filename = argv[1];
+	std::string filename_stem = std::filesystem::path(filename).stem().string();
 
 	if (util::is_market(filename)) {
 		io::matrix_market_t<vertex_t, edge_t, weight_t> mm;
@@ -40,6 +42,6 @@ int main(int argc, char **argv) {
 	thrust::device_vector<weight_t> p(n_vertices);
 
 	float gpu_elapsed = gunrock::pr::run(G, alpha, tol, p.data().get());
-	std::cout << "Time : " << gpu_elapsed << " (ms)" << std::endl;
+	std::cout << filename_stem << " PR elapsed time: " << gpu_elapsed << " (ms)" << std::endl;
 	return 0;
 }

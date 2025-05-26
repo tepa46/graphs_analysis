@@ -1,5 +1,7 @@
 #include "ssbfs.hxx"
 
+#include <filesystem>
+
 using namespace gunrock;
 using namespace memory;
 
@@ -16,6 +18,7 @@ int main(int argc, char **argv) {
 
 	csr_t csr;
 	std::string filename = argv[1];
+	std::string filename_stem = std::filesystem::path(filename).stem().string();
 
 	if (util::is_market(filename)) {
 		io::matrix_market_t<vertex_t, edge_t, weight_t> mm;
@@ -42,5 +45,5 @@ int main(int argc, char **argv) {
 
 	float gpu_elapsed = gunrock::bfs::run(G, single_source, distances.data().get(), predecessors.data().get());
 
-	std::cout << "Time : " << gpu_elapsed << " (ms)" << std::endl;
+	std::cout << filename_stem << " SSBFS " << single_source << " elapsed time: " << gpu_elapsed << " (ms)" << std::endl;
 }

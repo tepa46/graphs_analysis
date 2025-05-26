@@ -6,8 +6,6 @@ from pathlib import Path
 
 
 class GunrockAlgo(Algo):
-    __default_graph_name = "graph.mtx"
-    __graph_path = Path(__file__).parent / __default_graph_name
 
     def run_process(self, cuda_algo_path, params_lst):
         project_root = Path(__file__).resolve().parent
@@ -15,6 +13,8 @@ class GunrockAlgo(Algo):
         subprocess.run([algo_exec, self.__graph_path.resolve(), *params_lst])
 
     def load_data_from_dataset(self, dataset):
+        graph_name = Path(dataset).with_suffix('.mtx').name
+        self.__graph_path = Path(__file__).parent / graph_name
         n_nodes, edges = get_mtx_from_txt(dataset)
         with open(self.__graph_path, "w") as f:
             f.write("%%MatrixMarket matrix coordinate pattern general\n")

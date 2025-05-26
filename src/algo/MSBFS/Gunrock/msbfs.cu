@@ -1,3 +1,4 @@
+#include <filesystem>
 #include <vector>
 
 #include "msbfs.hxx"
@@ -20,6 +21,7 @@ int main(int argc, char **argv) {
 
 	csr_t csr;
 	std::string filename = argv[1];
+	std::string filename_stem = std::filesystem::path(filename).stem().string();
 
 	if (util::is_market(filename)) {
 		io::matrix_market_t<vertex_t, edge_t, weight_t> mm;
@@ -46,10 +48,10 @@ int main(int argc, char **argv) {
 
 	vertex_t n_vertices = G.get_number_of_vertices();
 	thrust::device_vector<vertex_t> sources(sources_vec.begin(), sources_vec.end());
-	thrust::device_vector<vertex_t> distances(n_vertices);
-	thrust::device_vector<vertex_t> predecessors(n_vertices);
+	thrust::device_vector<vertex_t> distances(n_vertices * sources_num);
+	thrust::device_vector<vertex_t> predecessors(n_vertices * sources_num);
 
 	float gpu_elapsed = gunrock::bfs::run(G, sources_vec, distances.data().get(), predecessors.data().get());
 
-	std::cout << "Time : " << gpu_elapsed << " (ms)" << std::endl;
+	std::cout << filename_stem << " MSBFS" << sources_num << " elapsed time: " << gpu_elapsed << " (ms)" << std::endl;
 }

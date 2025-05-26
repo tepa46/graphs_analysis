@@ -13,7 +13,7 @@ class GunrockAlgo(Algo):
         subprocess.run([algo_exec, self.__graph_path.resolve(), *params_lst])
 
     def load_data_from_dataset(self, dataset):
-        graph_name = Path(dataset).with_suffix('.mtx').name
+        graph_name = Path(dataset).with_suffix(".mtx").name
         self.__graph_path = Path(__file__).parent / graph_name
         n_nodes, edges = get_mtx_from_txt(dataset)
         with open(self.__graph_path, "w") as f:

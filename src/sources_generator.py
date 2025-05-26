@@ -1,12 +1,11 @@
+import linecache
 import random
 
 from pathlib import Path
 
 from src.dataset_utils import (
     get_datasets_path,
-    get_nodes_number,
     PATH_TO_DATASETS,
-    get_nodes_list,
     SOURCES,
     SSBFS,
     MSBFS,
@@ -15,10 +14,29 @@ from src.dataset_utils import (
 random.seed(42)
 
 
-def generate_sources(dataset, sources_number):
-    nodes = get_nodes_list(dataset)
+def count_lines(file_path):
+    with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+        return sum(1 for _ in f)
 
-    return random.sample(nodes, min(len(nodes), sources_number))
+
+def generate_sources(file_path, num_samples):
+    file_path = str(file_path)
+    total_lines = count_lines(file_path)
+    samples = random.sample(
+        range(1, total_lines + 1), min(num_samples * 2, total_lines)
+    )
+    nodes = set()
+
+    for i in samples:
+        line = linecache.getline(file_path, i)
+        if line:
+            parts = line.strip().split()
+            if len(parts) == 2:
+                nodes.update(parts)
+            if len(nodes) >= num_samples:
+                break
+
+    return random.sample(list(nodes), num_samples)
 
 
 SINGLE_SOURCE_EX_NUMBER = 10
@@ -47,10 +65,6 @@ def get_path_for_ms():
 def prepare_sources_for_bfs():
     datasets = get_datasets_path()
     for dataset in datasets:
-        nodes_number = get_nodes_number(dataset)
-
-        if nodes_number == 0:
-            continue
 
         # single source
         ss_path = get_path_for_ss()
@@ -79,6 +93,8 @@ def prepare_sources_for_bfs():
         ms_path_parts = [str(ms_path), f"{Path(dataset).stem}64.txt"]
         ms_path64 = Path(*ms_path_parts)
         save_sources(ms_path64, ms64)
+
+        print(f"Generated sources for {Path(dataset).stem}")
 
 
 if __name__ == "__main__":

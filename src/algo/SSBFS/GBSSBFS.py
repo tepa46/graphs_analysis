@@ -38,10 +38,12 @@ class GBSSBFS(Algo):
     def load_data_from_dataset(self, dataset):
         edges = np.loadtxt(dataset, dtype=int, delimiter="\t")
 
-        d_row_indices = edges[:, 0].tolist()
-        d_col_indices = edges[:, 1].tolist()
+        row_indices = edges[:, 0].tolist()
+        col_indices = edges[:, 1].tolist()
 
-        adj = Matrix.from_coo(d_row_indices, d_col_indices, True)
+        num_nodes = max(max(row_indices), max(col_indices)) + 1
+
+        adj = Matrix.from_coo(row_indices, col_indices, True, nrows=num_nodes, ncols=num_nodes)
         return adj
 
     def run(self, matrix, additional_data=None):

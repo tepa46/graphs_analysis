@@ -8,6 +8,11 @@ BENCHMARKS_DIR_PATH = "../../out/benchmarks"
 PLOT_DIRNAME = "../../out/graphs"
 BFS_ALGOS = ["SSBFS", "MSBFS16", "MSBFS32", "MSBFS64"]
 
+BFS_COMP = "BFSComp"
+GRAPHBLAS_COMP = "GraphBLASBFSComp.txt"
+GUNROCK_COMP = "GunrockBFSComp.txt"
+
+
 
 class Visualizer:
     def __init__(self):
@@ -16,6 +21,11 @@ class Visualizer:
             for realization, full_path in get_realization_name(algo):
                 print(full_path)
                 results[algo][realization] = read_benchmark(full_path)
+
+        full_path = path.join(BENCHMARKS_DIR_PATH, GRAPHBLAS_COMP)
+        results[BFS_COMP]["GraphBLAS"] = read_bfs_comp_benchmark(full_path)
+        full_path = path.join(BENCHMARKS_DIR_PATH, GUNROCK_COMP)
+        results[BFS_COMP]["Gunrock"] = read_bfs_comp_benchmark(full_path)
 
         self.save_dir = PLOT_DIRNAME
         os.makedirs(self.save_dir, exist_ok=True)
@@ -26,42 +36,48 @@ class Visualizer:
         filename = f"{name}.png"
         plt.savefig(path.join(self.save_dir, filename), dpi=300)
 
-    def single_algo_plot(self, algoName, realizationName):
-        if algoName not in self.bench:
-            print(f"Algo {algoName} not found")
-            return
+    def plot_bfs_comparisons_per_realization2(self):
+        os.makedirs(self.save_dir, exist_ok=True)
+        bfs_comp_bench = self.bench[BFS_COMP]
+        all_impls = list(bfs_comp_bench.keys())
 
-        if realizationName not in self.bench[algoName]:
-            print(f"Realization {realizationName} not found")
-            return
+        all_datasets = sorted({dataset for impl in bfs_comp_bench for dataset in bfs_comp_bench[impl]})
 
-        x = self.bench[algoName][realizationName].keys()
-        y = [v[0] for v in self.bench[algoName][realizationName].values()]
-        err = [v[1] for v in self.bench[algoName][realizationName].values()]
+        for impl in all_impls:
+            bfs_com_bench_for_impl = bfs_comp_bench[impl]
+            ratios = {alg: [float(bfs_com_bench_for_impl[g][i]) for g in all_datasets] for i, alg in
+                       enumerate(BFS_ALGOS)}
 
-        title = f"{algoName} with {realizationName}"
+            x = np.arange(len(all_datasets))
+            width = 0.2
 
-        x_label = "Dataset"
-        y_label = "Time (ms)"
+            fig, ax = plt.subplots(figsize=(12, 6))
 
-        plt.grid(axis="y", linestyle="--", alpha=0.5, zorder=1)
-        plt.bar(x, y, zorder=2, edgecolor="black", width=0.5, yerr=err, capsize=3)
-        plt.yscale("log")
-        plt.title(title)
-        plt.xlabel(x_label)
+            for idx, alg in enumerate(BFS_ALGOS):
+                ax.scatter(x, ratios[alg], marker='o', label=alg)
 
-        plt.text(
-            0.05,
-            1.02,
-            y_label,
-            transform=plt.gca().transAxes,
-            rotation=0,
-            ha="right",
-            va="bottom",
-        )
+            ax.axhline(1.0, color='gray', linestyle='--', linewidth=1, label='Baseline (SSBFS = 1)')
+            # ax.set_ylim(bottom=0)
+            # yticks = list(ax.get_yticks())
+            # if 1.0 not in yticks:
+            #     yticks.append(1.0)
+            #     yticks = sorted(yticks)
+            #     ax.set_yticks(yticks)
 
-        self._save_plot(f"{algoName}_{realizationName}")
-        clean_plot()
+            ax.set_xticks(x)
+            ax.set_xticklabels(all_datasets, rotation=45, ha='right')
+            ax.set_xlabel('Graph')
+            ax.set_ylabel('Time Ratio')
+            ax.set_title(f'{impl} BFS Algorithms Time Ratios Across Graphs')
+            ax.grid(True, linestyle='--', alpha=0.5)
+            ax.legend(title='Algorithm', bbox_to_anchor=(1.05, 1), loc='upper left')
+            plt.tight_layout()
+
+            out_path = os.path.join(
+                self.save_dir, f"{impl.lower()}_bfs_comparison2.png"
+            )
+            plt.savefig(out_path, dpi=300)
+            plt.close()
 
     def plot_bfs_comparisons_per_realization(self):
         os.makedirs(self.save_dir, exist_ok=True)
@@ -209,6 +225,16 @@ def clean_plot(fig=None):
         plt.close(fig)
 
 
+def read_bfs_comp_benchmark(dataset_path):
+    result = {}
+    with open(dataset_path) as f:
+        for line in f:
+            k, rest = line.strip().split(": ")
+            r1, r2, r3, r4 = rest.split()
+            result[k] = (r1, r2, r3, r4)
+    return result
+
+
 def read_benchmark(datasetPath):
     result = {}
     with open(datasetPath) as f:
@@ -239,6 +265,7 @@ def create_all_possible_graphs():
         for j in ["Gunrock", "GraphBLAS"]:
             v.single_algo_plot(i, j)
     v.plot_bfs_comparisons_per_realization()
+    v.plot_bfs_comparisons_per_realization2()
 
 
 if __name__ == "__main__":

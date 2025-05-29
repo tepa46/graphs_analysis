@@ -52,7 +52,6 @@ class Visualizer:
             }
 
             x = np.arange(len(all_datasets))
-            width = 0.2
 
             fig, ax = plt.subplots(figsize=(12, 6))
 

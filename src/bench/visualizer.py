@@ -13,7 +13,6 @@ GRAPHBLAS_COMP = "GraphBLASBFSComp.txt"
 GUNROCK_COMP = "GunrockBFSComp.txt"
 
 
-
 class Visualizer:
     def __init__(self):
         results = defaultdict(dict)
@@ -41,12 +40,16 @@ class Visualizer:
         bfs_comp_bench = self.bench[BFS_COMP]
         all_impls = list(bfs_comp_bench.keys())
 
-        all_datasets = sorted({dataset for impl in bfs_comp_bench for dataset in bfs_comp_bench[impl]})
+        all_datasets = sorted(
+            {dataset for impl in bfs_comp_bench for dataset in bfs_comp_bench[impl]}
+        )
 
         for impl in all_impls:
             bfs_com_bench_for_impl = bfs_comp_bench[impl]
-            ratios = {alg: [float(bfs_com_bench_for_impl[g][i]) for g in all_datasets] for i, alg in
-                       enumerate(BFS_ALGOS)}
+            ratios = {
+                alg: [float(bfs_com_bench_for_impl[g][i]) for g in all_datasets]
+                for i, alg in enumerate(BFS_ALGOS)
+            }
 
             x = np.arange(len(all_datasets))
             width = 0.2
@@ -54,9 +57,15 @@ class Visualizer:
             fig, ax = plt.subplots(figsize=(12, 6))
 
             for idx, alg in enumerate(BFS_ALGOS):
-                ax.scatter(x, ratios[alg], marker='o', label=alg)
+                ax.scatter(x, ratios[alg], marker="o", label=alg)
 
-            ax.axhline(1.0, color='gray', linestyle='--', linewidth=1, label='Baseline (SSBFS = 1)')
+            ax.axhline(
+                1.0,
+                color="gray",
+                linestyle="--",
+                linewidth=1,
+                label="Baseline (SSBFS = 1)",
+            )
             # ax.set_ylim(bottom=0)
             # yticks = list(ax.get_yticks())
             # if 1.0 not in yticks:
@@ -65,12 +74,12 @@ class Visualizer:
             #     ax.set_yticks(yticks)
 
             ax.set_xticks(x)
-            ax.set_xticklabels(all_datasets, rotation=45, ha='right')
-            ax.set_xlabel('Graph')
-            ax.set_ylabel('Time Ratio')
-            ax.set_title(f'{impl} BFS Algorithms Time Ratios Across Graphs')
-            ax.grid(True, linestyle='--', alpha=0.5)
-            ax.legend(title='Algorithm', bbox_to_anchor=(1.05, 1), loc='upper left')
+            ax.set_xticklabels(all_datasets, rotation=45, ha="right")
+            ax.set_xlabel("Graph")
+            ax.set_ylabel("Time Ratio")
+            ax.set_title(f"{impl} BFS Algorithms Time Ratios Across Graphs")
+            ax.grid(True, linestyle="--", alpha=0.5)
+            ax.legend(title="Algorithm", bbox_to_anchor=(1.05, 1), loc="upper left")
             plt.tight_layout()
 
             out_path = os.path.join(

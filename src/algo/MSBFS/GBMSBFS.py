@@ -45,7 +45,9 @@ class GBMSBFS(Algo):
 
         num_nodes = max(max(row_indices), max(col_indices)) + 1
 
-        adj = Matrix.from_coo(row_indices, col_indices, True, nrows=num_nodes, ncols=num_nodes)
+        adj = Matrix.from_coo(
+            row_indices, col_indices, True, nrows=num_nodes, ncols=num_nodes
+        )
         return adj
 
     def run(self, matrix, additional_data=None):

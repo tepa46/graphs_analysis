@@ -51,3 +51,10 @@ You can add your own graphs for benchmarking or use datasets from the [Stanford 
 
 [See benchmarks launch instructions](https://github.com/tepa46/graphs_analysis/blob/main/docker/README.md)
 
+### Experiment
+
+#### Objectives:
+1. Determine the performance gain provided by GPU multithreading compared to CPU multithreading.
+2. Analyze how the runtime of MSBFS increases within the same library when varying the number of starting vertices, relative to SSBFS.
+
+[See experimental results](https://github.com/tepa46/graphs_analysis/blob/main/presentation.pdf)

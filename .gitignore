@@ -2,9 +2,14 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=pycharm+all,macos,c++
 
 
+datasetsPyspark/
+out_bench/
+out_bench_diff/
+__pycache__/
 .venv/
 datasets/
 out/
+
 
 ### C++ ###
 # Prerequisites

@@ -1,4 +1,4 @@
-from src.algo.SSBFS.PysparkSSBFS import SparkSSBFS
+from src.algo.SSBFS.PysparkSQL import SparkSSBFS
 from src.bench.SSPBFS.SSPBFSBench import SSBFSBench
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 from src.algo.MSBFS.PysparkMSBFS import SparkMSBFS
-from src.bench.SSPBFS.SSPBFSBench import SSBFSBench
+from src.bench.MSPBFS.MSBFSBench import MSBFSBench
 
 if __name__ == "__main__":
     with SparkMSBFS() as algo:
-        SSBFSBench().run_bench(algo)
+        MSBFSBench().run_bench(algo)

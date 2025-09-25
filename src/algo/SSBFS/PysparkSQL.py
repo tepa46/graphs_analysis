@@ -14,6 +14,11 @@ class SparkSSBFS:
             .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
             .config("spark.cleaner.referenceTracking.cleanCheckpoints", "true")
             .config("spark.driver.memory", "8g")
+            # .config("spark.eventLog.enabled", "true")
+            # .config(
+            #     "spark.eventLog.dir",
+            #     "/home/pavlusha/Documents/Spbu/graphs_analysis/logs",
+            # )F
             .getOrCreate()
         )
         self.spark.sparkContext.setCheckpointDir(self.tmp_path)
@@ -103,10 +108,10 @@ class SparkSSBFS:
 
 
 def main():
-    path = "../../../datasets/Email-Enron.txt"  # Проверьте путь
+    path = "/home/pavlusha/Documents/Spbu/graphs_analysis/normal_datasets_undirect/CAHepPh.txt"  # Проверьте путь
     with SparkSSBFS() as algo:
         data = algo.load_data_from_dataset(path)
-        algo.run(data, additional_data=41905)
+        algo.run(data, additional_data=38297)
 
 
 if __name__ == "__main__":

@@ -10,19 +10,19 @@ This academic project serves as a platform for benchmarking graph algorithms acr
 
 1. **PageRank**:
     - Implementation using Gunrock (Elkin)
-    - Implementation using Spark  (Pavlushkin)
+    - Implementation using PySpark  (Pavlushkin)
     - Implementation using GraphBLAS (Shishin)
 
 
 2. **Single Source Parent BFS**:
     - Implementation using Gunrock (Elkin)
-    - Implementation using Spark (Pavlushkin)
+    - Implementation using PySpark (Pavlushkin)
     - Implementation using GraphBLAS (Shishin)
 
 
 3. **Multi Source Parent BFS**:
     - Implementation using Gunrock (Elkin)
-    - Implementation using Spark (Pavlushkin)
+    - Implementation using PySpark (Pavlushkin)
     - Implementation using GraphBLAS (Shishin)
 
 ## How To Run

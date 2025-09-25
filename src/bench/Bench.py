@@ -5,7 +5,7 @@ from pathlib import Path
 from src.algo.algo import Algo
 from src.dataset_utils import get_datasets_path
 
-RUN_NUMBER = 20
+RUN_NUMBER = 2
 
 
 class Bench:

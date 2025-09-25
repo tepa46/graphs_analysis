@@ -39,7 +39,7 @@ def generate_sources(file_path, num_samples):
     return random.sample(list(nodes), num_samples)
 
 
-SINGLE_SOURCE_EX_NUMBER = 10
+SINGLE_SOURCE_EX_NUMBER = 1
 
 
 def write_to_file(filepath, text):

@@ -7,7 +7,7 @@ from pyspark.sql.types import LongType
 from pyspark.sql.types import StructType, StructField
 
 
-class SparkGraphXPG(Algo):
+class SparkGraphFrame(Algo):
     def __enter__(self):
         self.spark = (
             SparkSession.builder.appName("PythonPageRank")
@@ -15,15 +15,25 @@ class SparkGraphXPG(Algo):
             .config(
                 "spark.jars.packages", "graphframes:graphframes:0.8.2-spark3.1-s_2.12"
             )
-            .config("spark.driver.memory", "12g")
+            .config("spark.driver.memory", "4g")
+            .config("spark.executor.memory", "2g")
+            .config("spark.executor.cores", "4")
+            .config("spark.executor.instances", "2")
+            .config("spark.eventLog.enabled", "true")
+            .config(
+                "spark.eventLog.dir",
+                "/home/pavlusha/Documents/Spbu/graphs_analysis/logs",
+            )
             .getOrCreate()
         )
+
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.spark.stop()
 
     def load_data_from_dataset(self, dataset):
+        print("Loading data from dataset", dataset)
         lines = self.spark.read.text(str(dataset)).rdd.map(lambda r: r[0])
         return lines.map(parseNeighbors).distinct()
 
@@ -50,7 +60,6 @@ class SparkGraphXPG(Algo):
 
         graph.pageRank(resetProbability=1 - alpha, tol=eps)
 
-        # print(pagerank.show())
         return
 
 
@@ -60,8 +69,8 @@ def parseNeighbors(urls: str) -> tuple[int, int]:
 
 
 def main():
-    path = "../../../datasets/Email-Enron.txt"  # Проверьте путь
-    with SparkGraphXPG() as algo:
+    path = "/home/pavlusha/Documents/Spbu/graphs_analysis/tmp/Wiki-Vote.txt"  # Проверьте путь
+    with SparkGraphFrame() as algo:
         data = algo.load_data_from_dataset(path)
         algo.run(data)
 

@@ -4,13 +4,14 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 import numpy as np
 
-BENCHMARKS_DIR_PATH = "../../out/benchmarks"
-PLOT_DIRNAME = "../../out/graphs"
+BENCHMARKS_DIR_PATH = "/home/pavlusha/Documents/Spbu/graphs_analysis/out_bench_diff"
+PLOT_DIRNAME = "/home/pavlusha/Documents/Spbu/graphs_analysis/out_bench_diff/graphs"
 BFS_ALGOS = ["SSBFS", "MSBFS16", "MSBFS32", "MSBFS64"]
 
 BFS_COMP = "BFSComp"
 GRAPHBLAS_COMP = "GraphBLASBFSComp.txt"
 GUNROCK_COMP = "GunrockBFSComp.txt"
+PYSPARK_COMP = "PySparkComp.txt"
 
 
 class Visualizer:
@@ -21,10 +22,10 @@ class Visualizer:
                 print(full_path)
                 results[algo][realization] = read_benchmark(full_path)
 
-        full_path = path.join(BENCHMARKS_DIR_PATH, GRAPHBLAS_COMP)
-        results[BFS_COMP]["GraphBLAS"] = read_bfs_comp_benchmark(full_path)
-        full_path = path.join(BENCHMARKS_DIR_PATH, GUNROCK_COMP)
-        results[BFS_COMP]["Gunrock"] = read_bfs_comp_benchmark(full_path)
+        full_path = path.join(BENCHMARKS_DIR_PATH, PYSPARK_COMP)
+        results[BFS_COMP]["PySpark"] = read_bfs_comp_benchmark(full_path)
+        # full_path = path.join(BENCHMARKS_DIR_PATH, GUNROCK_COMP)
+        # results[BFS_COMP]["Gunrock"] = read_bfs_comp_benchmark(full_path)
 
         self.save_dir = PLOT_DIRNAME
         os.makedirs(self.save_dir, exist_ok=True)
@@ -268,10 +269,10 @@ def get_realization_name(algoName):
 
 def create_all_possible_graphs():
     v = Visualizer()
-    for i in ["Pagerank", "SSBFS", "MSBFS16", "MSBFS32", "MSBFS64"]:
-        v.all_algo_realizations_compare_plot(i)
-        for j in ["Gunrock", "GraphBLAS"]:
-            v.single_algo_plot(i, j)
+    # for i in ["PageRank", "SSBFS", "MSBFS16", "MSBFS32", "MSBFS64"]:
+    #     v.all_algo_realizations_compare_plot(i)
+    # for j in ["Gunrock", "GraphBLAS"]:
+    #     v.single_algo_plot(i, j)
     v.plot_bfs_comparisons_per_realization()
     v.plot_bfs_comparisons_per_realization2()
 
